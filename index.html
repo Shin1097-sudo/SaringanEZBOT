@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saringan Cabaran EZBOT</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url("https://raw.githubusercontent.com/Shin1097-sudo/SaringanEZBOT/refs/heads/ezbot/background.png");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      text-align: center;
+      padding: 130px 30px 30px;
+      margin: 0;
+    }
+
+    h1 {
+      color: #2c3e50;
+    }
+
+    p {
+      color: #555;
+      font-size: 18px;
+    }
+
+    .info {
+      position: fixed;
+      top: 15px;
+      right: 20px;
+      left: auto;
+      transform: none;
+      display: flex;
+      gap: 20px;
+      z-index: 999;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .info-box {
+      background-color: white;
+      padding: 18px 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      font-size: 22px;
+      font-weight: bold;
+      color: #2c3e50;
+      border: 3px solid #4f8cff;
+    }
+
+    .score-info-box,
+    .hidden-markah {
+      display: none !important;
+    }
+
+    #time {
+      color: red;
+      font-size: 34px;
+    }
+
+    #score {
+      color: green;
+      font-size: 34px;
+    }
+
+    .student-form {
+      background-color: white;
+      max-width: 750px;
+      margin: 0 auto 30px;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      border: 2px solid #d6e6ff;
+    }
+
+    .student-form h2 {
+      color: #2c3e50;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #34495e;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #b7c9e6;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .quiz-area {
+      background: white;
+      max-width: 1400px;
+      margin: 20px auto;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .question-header {
+      background-color: #4f8cff;
+      color: white;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .question-header p {
+      color: white;
+    }
+
+    .question-image-box {
+      margin: 20px auto;
+      max-width: 900px;
+      background-color: #f8fbff;
+      border: 2px solid #d6e6ff;
+      border-radius: 15px;
+      padding: 15px;
+    }
+
+    .question-image-box img {
+      max-width: 100%;
+      max-height: 380px;
+      object-fit: contain;
+      border-radius: 12px;
+    }
+
+    /* SUSUNAN UTAMA: Kad arahan melintang di atas, jawapan di bawah */
+    .main-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    .source-section {
+      width: 100%;
+      max-width: 1200px;
+      background-color: #f8fbff;
+      border: 3px dashed #7aa7d9;
+      border-radius: 15px;
+      padding: 15px;
+      min-height: auto;
+      box-sizing: border-box;
+    }
+
+    .answer-section {
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .drop-zone {
+      min-height: 115px;
+      background-color: #f8fbff;
+      border: 3px dashed #b7c9e6;
+      border-radius: 12px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    /* KAD ARAHAN MELINTANG */
+    #sourceBox {
+      min-height: 105px;
+      max-height: none;
+      overflow-x: auto;
+      overflow-y: hidden;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+
+    .drop-zone.drag-over {
+      background-color: #dcecff;
+      border-color: #4f8cff;
+    }
+
+    .zone-title {
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .placeholder {
+      color: #888;
+      font-style: italic;
+      font-size: 13px;
+      margin-top: 20px;
+    }
+
+    .item {
+      background-color: #4f8cff;
+      color: white;
+      padding: 6px;
+      margin: 0;
+      border-radius: 8px;
+      cursor: grab;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+
+    .item img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      background-color: white;
+      border-radius: 6px;
+      padding: 4px;
+    }
+
+    .item:active {
+      cursor: grabbing;
+    }
+
+    .answer-choice {
+      background-color: #4f8cff;
+    }
+
+    .locked {
+      cursor: not-allowed;
+      opacity: 0.9;
+    }
+
+    button {
+      margin-top: 25px;
+      padding: 12px 25px;
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+
+    button:hover {
+      background-color: #27ae60;
+    }
+
+    .submit-btn {
+      background-color: #3498db;
+    }
+
+    .submit-btn:hover {
+      background-color: #2980b9;
+    }
+
+    .reset-btn {
+      background-color: #e74c3c;
+    }
+
+    .reset-btn:hover {
+      background-color: #c0392b;
+    }
+
+    button:disabled {
+      background-color: #bdc3c7;
+      cursor: not-allowed;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .result-box {
+      display: none;
+      background-color: white;
+      max-width: 850px;
+      margin: 25px auto;
+      padding: 20px;
+      border-radius: 15px;
+      border: 3px solid #4f8cff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      text-align: left;
+    }
+
+    .result-box h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .result-box p {
+      font-size: 18px;
+      color: #333;
+    }
+
+    .page-hidden {
+      display: none;
+    }
+
+    .intro-note {
+      max-width: 750px;
+      margin: 0 auto 20px;
+      background: rgba(255,255,255,0.9);
+      padding: 15px;
+      border-radius: 12px;
+      border: 2px solid #d6e6ff;
+      color: #2c3e50;
+      font-weight: bold;
+    }
+
+    .result-page {
+      max-width: 900px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.95);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 150px 12px 30px;
+      }
+
+      .answer-section {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      }
+
+      .item img {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="info" id="infoBar" style="display:none;">
+    <div class="info-box">
+      Masa: <span id="time">30:00</span>
+    </div>
+
+    <div class="info-box score-info-box">
+      Markah: <span id="score">--</span>
+    </div>
+  </div>
+
+  <!-- PAGE 1: MAKLUMAT KUMPULAN -->
+  <div id="introPage">
+    <h1>Saringan Cabaran EZBOT</h1>
+    <p class="intro-note">Isi maklumat kumpulan dahulu. Selepas lengkap, tekan butang di bawah untuk masuk ke halaman kuiz.</p>
+
+    <div class="student-form">
+      <h2>Maklumat Kumpulan</h2>
+
+      <div class="form-group">
+        <label for="groupName">Nama Kumpulan</label>
+        <input type="text" id="groupName" placeholder="Contoh: Kumpulan Cemerlang">
+      </div>
+
+      <div class="form-group">
+        <label for="schoolName">Nama Sekolah</label>
+        <input type="text" id="schoolName" placeholder="Contoh: SK Seri Indah">
+      </div>
+
+      <div class="form-group">
+        <label for="stateName">Negeri</label>
+        <select id="stateName">
+          <option value="">-- Pilih Negeri --</option>
+          <option value="Johor">Johor</option>
+          <option value="Kedah">Kedah</option>
+          <option value="Kelantan">Kelantan</option>
+          <option value="Melaka">Melaka</option>
+          <option value="Negeri Sembilan">Negeri Sembilan</option>
+          <option value="Pahang">Pahang</option>
+          <option value="Perak">Perak</option>
+          <option value="Perlis">Perlis</option>
+          <option value="Pulau Pinang">Pulau Pinang</option>
+          <option value="Sabah">Sabah</option>
+          <option value="Sarawak">Sarawak</option>
+          <option value="Selangor">Selangor</option>
+          <option value="Terengganu">Terengganu</option>
+          <option value="Kuala Lumpur">Wilayah Persekutuan Kuala Lumpur</option>
+          <option value="Labuan">Wilayah Persekutuan Labuan</option>
+          <option value="Putrajaya">Wilayah Persekutuan Putrajaya</option>
+        </select>
+      </div>
+
+
+      <button type="button" onclick="openQuizPage()">Teruskan ke Kuiz</button>
+    </div>
+  </div>
+
+  <!-- PAGE 2: KUIZ -->
+  <div id="quizPage" class="page-hidden">
+    <div class="quiz-area">
+      <div class="question-header">
+        <h2 id="questionTitle">Soalan 1</h2>
+        <p id="questionInstruction">Susun item ke bahagian yang betul.</p>
+      </div>
+
+      <div class="question-image-box" id="questionImageBox">
+        <img src="https://raw.githubusercontent.com/Shin1097-sudo/SaringanEZBOT/refs/heads/ezbot/q1_soalan.png" alt="Gambar Soalan 1">
+      </div>
+
+      <div class="main-layout">
+        <div class="source-section">
+          <h2>Kad Arahan</h2>
+          <p style="font-size:14px;">Kad arahan boleh digunakan banyak kali.</p>
+          <div class="drop-zone" id="sourceBox" data-zone="pilihan"></div>
+        </div>
+
+        <div class="answer-section" id="answerSection"></div>
+      </div>
+    </div>
+
+    <div>
+      <button type="button" class="submit-btn" onclick="submitQuestion()">Hantar Soalan</button>
+      <button type="button" class="reset-btn" onclick="resetGame()">Reset</button>
+    </div>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <!-- PAGE 3: PAPARAN TAMAT SAHAJA -->
+  <div id="resultPage" class="page-hidden result-page">
+    <h1>Tahniah!</h1>
+    <p style="font-size: 28px; font-weight: bold; color: #2c3e50; text-align: center;">
+      Tahniah anda telah tamat menjawab saringan.
+    </p>
+    <p style="font-size: 18px; color: #555; text-align: center;">
+      Jawapan anda telah direkod.
+    </p>
+  </div>
+
+  <script>
+    const totalQuestions = 5;
+    const totalChoices = 17;
+
+    const correctMark = 10;
+    const wrongMark = 0;
+
+    const totalQuizTime = 1800;
+    let timeLeft = totalQuizTime;
+    let timer;
+    let gameStarted = false;
+    let submittedCurrentQuestion = false;
+    let currentQuestionIndex = 0;
+    let totalScore = 0;
+    let allAnswers = [];
+
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2co2HB-4iCQmdhi16R1GLOq6vT8vl2VGEwgsV76Qd98PMuNLTSNX804tjSBlTj3lMiA/exec";
+
+    const GITHUB_IMAGE_BASE = "https://raw.githubusercontent.com/Shin1097-sudo/SaringanEZBOT/refs/heads/ezbot/";
+
+    const timeDisplay = document.getElementById("time");
+    const scoreDisplay = document.getElementById("score");
+    const message = document.getElementById("message");
+
+    const sourceBox = document.getElementById("sourceBox");
+    const answerSection = document.getElementById("answerSection");
+    const questionTitle = document.getElementById("questionTitle");
+    const questionInstruction = document.getElementById("questionInstruction");
+    const questionImageBox = document.getElementById("questionImageBox");
+
+    const groupName = document.getElementById("groupName");
+    const schoolName = document.getElementById("schoolName");
+    const stateName = document.getElementById("stateName");
+
+    const resultBox = document.getElementById("resultBox");
+    const resultGroup = document.getElementById("resultGroup");
+    const resultSchool = document.getElementById("resultSchool");
+    const resultState = document.getElementById("resultState");
+    const resultDateTime = document.getElementById("resultDateTime");
+    const resultTimeTaken = document.getElementById("resultTimeTaken");
+    const resultScore = document.getElementById("resultScore");
+
+    const introPage = document.getElementById("introPage");
+    const quizPage = document.getElementById("quizPage");
+    const resultPage = document.getElementById("resultPage");
+    const infoBar = document.getElementById("infoBar");
+
+    const questions = [];
+
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return minutes + ":" + (remainingSeconds < 10 ? "0" : "") + remainingSeconds;
+    }
+
+    timeDisplay.textContent = formatTime(timeLeft);
+
+    /*
+      Bahagian ini ialah jawapan sebenar untuk setiap soalan.
+      Kalau satu slot boleh terima lebih daripada satu jawapan, guna array.
+      Contoh: ["pilihan7", "pilihan8"]
+    */
+    const answerKeys = {
+      1: [
+        "pilihan1", "pilihan3", ["pilihan7", "pilihan8"], "pilihan4", "pilihan3",
+        "pilihan8", "pilihan5", "pilihan3", ["pilihan9", "pilihan8"], "pilihan2"
+      ],
+
+      2: [
+        "pilihan1", "pilihan3", ["pilihan7", "pilihan8"], "pilihan5",
+        "pilihan3", "pilihan7", "pilihan4", "pilihan3", ["pilihan9", "pilihan8"],
+        "pilihan12", "pilihan2"
+      ],
+
+      3: [
+        "pilihan1", "pilihan3", ["pilihan7", "pilihan8"], "pilihan4",
+        "pilihan3", "pilihan7", "pilihan5", "pilihan3", ["pilihan7", "pilihan8"],
+        "pilihan17", "pilihan2"
+      ],
+
+      4: [
+        "pilihan1", "pilihan3", ["pilihan7", "pilihan8"], "pilihan4",
+        "pilihan3", "pilihan8", "pilihan5", "pilihan3", ["pilihan7", "pilihan8"],
+        "pilihan13", "pilihan2"
+      ],
+
+      5: [
+        "pilihan1", "pilihan3", "pilihan7", "pilihan4", "pilihan3",
+        "pilihan7", "pilihan14", "pilihan6", "pilihan3", "pilihan8", "pilihan4",
+        "pilihan3", "pilihan10", "pilihan16", "pilihan2"
+      ]
+    };
+
+    const commonChoices = [];
+
+    for (let i = 1; i <= totalChoices; i++) {
+      commonChoices.push({
+        value: `pilihan${i}`,
+        text: `Pilihan ${i}`,
+        image: `pilihan${i}.png`
+      });
+    }
+
+    for (let q = 1; q <= totalQuestions; q++) {
+      const zones = [];
+
+      for (let i = 0; i < answerKeys[q].length; i++) {
+        zones.push({
+          id: `slot${i + 1}`,
+          label: `Kad Arahan ${i + 1}`,
+          answer: Array.isArray(answerKeys[q][i])
+            ? answerKeys[q][i].join(",")
+            : answerKeys[q][i]
+        });
+      }
+
+      questions.push({
+        title: `Soalan ${q}`,
+        instruction: `Lihat gambar soalan. Soalan ini mempunyai ${answerKeys[q].length} tempat jawapan.`,
+        image: `q${q}_soalan.png`,
+        choices: commonChoices,
+        zones: zones
+      });
+    }
+
+    sourceBox.addEventListener("dragover", dragOver);
+    sourceBox.addEventListener("dragleave", dragLeave);
+    sourceBox.addEventListener("drop", dropItem);
+
+    function openQuizPage() {
+      if (!validateStudentInfo()) {
+        return;
+      }
+
+      introPage.style.display = "none";
+      quizPage.style.display = "block";
+      resultPage.style.display = "none";
+      infoBar.style.display = "flex";
+
+      window.scrollTo(0, 0);
+      startGame();
+    }
+
+    function validateStudentInfo() {
+      if (groupName.value.trim() === "") {
+        alert("Sila isi Nama Kumpulan.");
+        groupName.focus();
+        return false;
+      }
+
+      if (schoolName.value.trim() === "") {
+        alert("Sila isi Nama Sekolah.");
+        schoolName.focus();
+        return false;
+      }
+
+      if (stateName.value === "") {
+        alert("Sila pilih Negeri.");
+        stateName.focus();
+        return false;
+      }
+
+
+      return true;
+    }
+
+    function startGame() {
+      if (gameStarted) return;
+
+      groupName.disabled = true;
+      schoolName.disabled = true;
+      stateName.disabled = true;
+
+      gameStarted = true;
+      message.textContent = "Kuiz bermula. Selesaikan soalan semasa dahulu.";
+
+      loadQuestion(currentQuestionIndex);
+
+      timer = setInterval(function() {
+        timeLeft--;
+        timeDisplay.textContent = formatTime(timeLeft);
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          finishQuiz();
+        }
+      }, 1000);
+    }
+
+    function loadQuestion(index) {
+      submittedCurrentQuestion = false;
+
+      const question = questions[index];
+
+      questionTitle.textContent = question.title;
+      questionInstruction.textContent = question.instruction;
+
+      questionImageBox.innerHTML = `
+        <img src="${GITHUB_IMAGE_BASE}${question.image}" alt="${question.title}" onerror="this.style.display='none'">
+      `;
+
+      sourceBox.innerHTML = "";
+      answerSection.innerHTML = "";
+
+      question.choices.forEach(choice => {
+        const choiceDiv = document.createElement("div");
+        choiceDiv.className = "item choice-template";
+        choiceDiv.draggable = true;
+        choiceDiv.setAttribute("data-value", choice.value);
+        choiceDiv.setAttribute("data-type", "template");
+
+        choiceDiv.innerHTML = `
+          <img src="${GITHUB_IMAGE_BASE}${choice.image}" alt="${choice.text}" onerror="this.style.display='none'">
+        `;
+
+        choiceDiv.addEventListener("dragstart", dragStart);
+        sourceBox.appendChild(choiceDiv);
+      });
+
+      question.zones.forEach(zone => {
+        const zoneDiv = document.createElement("div");
+        zoneDiv.className = "drop-zone answer-zone";
+        zoneDiv.setAttribute("data-zone", zone.id);
+        zoneDiv.setAttribute("data-answer", zone.answer);
+
+        zoneDiv.innerHTML = `
+          <div class="zone-title">${zone.label}</div>
+          <div class="placeholder">Letak kad arahan di sini</div>
+        `;
+
+        zoneDiv.addEventListener("dragover", dragOver);
+        zoneDiv.addEventListener("dragleave", dragLeave);
+        zoneDiv.addEventListener("drop", dropItem);
+
+        answerSection.appendChild(zoneDiv);
+      });
+    }
+
+    function dragStart(event) {
+      if (!gameStarted) {
+        alert("Sila tekan butang Teruskan ke Kuiz dahulu.");
+        event.preventDefault();
+        return;
+      }
+
+      if (submittedCurrentQuestion) {
+        alert("Soalan ini sudah dihantar.");
+        event.preventDefault();
+        return;
+      }
+
+      if (timeLeft <= 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const item = event.target.closest(".item");
+
+      event.dataTransfer.setData("value", item.getAttribute("data-value"));
+      event.dataTransfer.setData("type", item.getAttribute("data-type") || "answer");
+      event.dataTransfer.setData("id", item.id || "");
+    }
+
+    function dragOver(event) {
+      event.preventDefault();
+
+      if (gameStarted && !submittedCurrentQuestion && timeLeft > 0) {
+        event.currentTarget.classList.add("drag-over");
+      }
+    }
+
+    function dragLeave(event) {
+      event.currentTarget.classList.remove("drag-over");
+    }
+
+    function dropItem(event) {
+      event.preventDefault();
+
+      if (!gameStarted || submittedCurrentQuestion || timeLeft <= 0) {
+        return;
+      }
+
+      const targetZone = event.currentTarget;
+      targetZone.classList.remove("drag-over");
+
+      const value = event.dataTransfer.getData("value");
+      const type = event.dataTransfer.getData("type");
+      const id = event.dataTransfer.getData("id");
+
+      if (!value) return;
+
+      if (targetZone.id === "sourceBox") {
+        if (type === "answer") {
+          const existingAnswer = document.getElementById(id);
+          if (existingAnswer) {
+            existingAnswer.remove();
+            restoreEmptyPlaceholders();
+            message.textContent = "Item telah dikeluarkan daripada jawapan.";
+          }
+        }
+        return;
+      }
+
+      if (targetZone.classList.contains("answer-zone")) {
+        const existingItem = targetZone.querySelector(".answer-choice");
+
+        if (existingItem) {
+          existingItem.remove();
+        }
+
+        if (type === "template") {
+          const template = document.querySelector(`.choice-template[data-value="${value}"]`);
+          const newItem = createAnswerItem(template, value);
+          removePlaceholder(targetZone);
+          targetZone.appendChild(newItem);
+        } else {
+          const draggedAnswer = document.getElementById(id);
+
+          if (draggedAnswer) {
+            removePlaceholder(targetZone);
+            targetZone.appendChild(draggedAnswer);
+          }
+        }
+
+        restoreEmptyPlaceholders();
+        message.textContent = "Anda boleh ubah jawapan sebelum tekan Hantar Soalan.";
+      }
+    }
+
+    function createAnswerItem(template, value) {
+      const newItem = document.createElement("div");
+
+      newItem.className = "item answer-choice";
+      newItem.id = "answer_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+      newItem.draggable = true;
+      newItem.setAttribute("data-value", value);
+      newItem.setAttribute("data-type", "answer");
+
+      newItem.innerHTML = template.innerHTML;
+      newItem.addEventListener("dragstart", dragStart);
+
+      return newItem;
+    }
+
+    function submitQuestion() {
+      if (!gameStarted) {
+        alert("Sila tekan butang Teruskan ke Kuiz dahulu.");
+        return;
+      }
+
+      if (submittedCurrentQuestion) {
+        return;
+      }
+
+      if (!isQuestionComplete()) {
+        alert("Sila lengkapkan semua tempat jawapan untuk soalan ini dahulu.");
+        return;
+      }
+
+      const answerZones = document.querySelectorAll(".answer-zone");
+      let questionScore = 0;
+
+      let questionRecord = {
+        soalan: currentQuestionIndex + 1,
+        markahSoalan: 0,
+        jawapan: []
+      };
+
+      answerZones.forEach((zone, index) => {
+        const answerItem = zone.querySelector(".answer-choice");
+        const selectedValue = answerItem.getAttribute("data-value");
+        const correctValues = zone.getAttribute("data-answer").split(",");
+
+        let statusJawapan = "Salah";
+
+        if (correctValues.includes(selectedValue)) {
+          questionScore += correctMark;
+          statusJawapan = "Betul";
+        } else {
+          questionScore += wrongMark;
+        }
+
+        questionRecord.jawapan.push({
+          bahagian: index + 1,
+          jawapanPelajar: selectedValue,
+          jawapanDiterima: correctValues,
+          status: statusJawapan
+        });
+
+        answerItem.draggable = false;
+        answerItem.classList.add("locked");
+      });
+
+      questionRecord.markahSoalan = questionScore;
+      allAnswers.push(questionRecord);
+
+      const sourceItems = document.querySelectorAll(".choice-template");
+      sourceItems.forEach(item => {
+        item.draggable = false;
+        item.classList.add("locked");
+      });
+
+      totalScore += questionScore;
+      submittedCurrentQuestion = true;
+
+      if (currentQuestionIndex === questions.length - 1) {
+        message.textContent = "Semua soalan telah dihantar.";
+        finishQuiz();
+      } else {
+        currentQuestionIndex++;
+        loadQuestion(currentQuestionIndex);
+        message.textContent = "Jawapan telah dihantar. Teruskan dengan soalan seterusnya.";
+      }
+    }
+
+    function isQuestionComplete() {
+      const answerZones = document.querySelectorAll(".answer-zone");
+
+      for (let zone of answerZones) {
+        const hasItem = zone.querySelector(".answer-choice");
+
+        if (!hasItem) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    function getTimeTaken() {
+      const usedSeconds = totalQuizTime - timeLeft;
+      return formatTime(usedSeconds);
+    }
+
+    function saveResultToGoogleSheet(dateTimeAnswered) {
+      const masaDiambil = getTimeTaken();
+
+      const payload = {
+        tarikh: dateTimeAnswered,
+        masaDiambil: masaDiambil,
+        groupName: groupName.value.trim(),
+        schoolName: schoolName.value.trim(),
+        stateName: stateName.value,
+        score: String(totalScore),
+        answers: JSON.stringify(allAnswers),
+
+        // Nama medan tambahan supaya serasi jika Google Apps Script cikgu guna nama BM.
+        namaKumpulan: groupName.value.trim(),
+        namaSekolah: schoolName.value.trim(),
+        negeri: stateName.value,
+        markah: String(totalScore),
+        jawapan: JSON.stringify(allAnswers)
+      };
+
+      // Simpan salinan dalam browser sebagai backup jika internet/Web App bermasalah.
+      try {
+        localStorage.setItem("EZBOT_LAST_SUBMISSION", JSON.stringify(payload));
+      } catch (error) {
+        console.warn("Backup localStorage gagal:", error);
+      }
+
+      // Kaedah hidden form lebih sesuai untuk Google Apps Script kerana tidak bergantung pada CORS.
+      const iframeName = "google_sheet_iframe_" + Date.now();
+
+      const iframe = document.createElement("iframe");
+      iframe.name = iframeName;
+      iframe.style.display = "none";
+      document.body.appendChild(iframe);
+
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = GOOGLE_SCRIPT_URL;
+      form.target = iframeName;
+      form.style.display = "none";
+
+      Object.keys(payload).forEach(key => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = payload[key];
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+
+      setTimeout(() => {
+        form.remove();
+        iframe.remove();
+      }, 5000);
+    }
+
+    function finishQuiz() {
+      gameStarted = false;
+      clearInterval(timer);
+
+      const allItems = document.querySelectorAll(".item");
+
+      allItems.forEach(item => {
+        item.draggable = false;
+        item.classList.add("locked");
+      });
+
+      const now = new Date();
+
+      const dateTimeAnswered = now.toLocaleString("ms-MY", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+      });
+
+      scoreDisplay.textContent = totalScore;
+
+      // Hantar data ke Google Sheet dahulu.
+      // Jangan panggil resultGroup/resultSchool/resultBox kerana elemen itu sudah tiada dalam HTML.
+      saveResultToGoogleSheet(dateTimeAnswered);
+
+      // Paparkan halaman tamat sahaja kepada pelajar.
+      quizPage.style.display = "none";
+      infoBar.style.display = "none";
+      resultPage.style.display = "block";
+      window.scrollTo(0, 0);
+    }
+
+    function resetGame() {
+      clearInterval(timer);
+
+      timeLeft = totalQuizTime;
+      gameStarted = false;
+      submittedCurrentQuestion = false;
+      currentQuestionIndex = 0;
+      totalScore = 0;
+      allAnswers = [];
+
+      timeDisplay.textContent = formatTime(timeLeft);
+      scoreDisplay.textContent = "--";
+      message.textContent = "";
+
+      groupName.disabled = false;
+      schoolName.disabled = false;
+      stateName.disabled = false;
+
+      groupName.value = "";
+      schoolName.value = "";
+      stateName.value = "";
+
+      introPage.style.display = "block";
+      quizPage.style.display = "none";
+      resultPage.style.display = "none";
+      infoBar.style.display = "none";
+      window.scrollTo(0, 0);
+
+      loadQuestion(currentQuestionIndex);
+    }
+
+    function removePlaceholder(zone) {
+      const placeholder = zone.querySelector(".placeholder");
+
+      if (placeholder) {
+        placeholder.remove();
+      }
+    }
+
+    function restoreEmptyPlaceholders() {
+      const answerZones = document.querySelectorAll(".answer-zone");
+
+      answerZones.forEach(zone => {
+        const hasItem = zone.querySelector(".answer-choice");
+        const hasPlaceholder = zone.querySelector(".placeholder");
+
+        if (!hasItem && !hasPlaceholder) {
+          const placeholder = document.createElement("div");
+          placeholder.className = "placeholder";
+          placeholder.textContent = "Letak kad arahan di sini";
+          zone.appendChild(placeholder);
+        }
+
+        zone.classList.remove("drag-over");
+      });
+
+      sourceBox.classList.remove("drag-over");
+    }
+
+    loadQuestion(currentQuestionIndex);
+  </script>
+
+</body>
+</html>
