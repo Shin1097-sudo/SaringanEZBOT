@@ -79,7 +79,7 @@
                             <span>🚀 Start 5-Min Countdown</span>
                         </button>
                         <button onclick="masterReset()" class="px-6 py-4 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 font-semibold rounded-2xl border border-slate-700 transition-all text-base">
-                            🔄 Reset All (05:00)
+                            🔄 Hard Reset (05:00)
                         </button>
                         <button onclick="switchRole('projector')" class="px-6 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-2xl transition-all text-base flex items-center gap-2 shadow-lg shadow-indigo-600/30">
                             <span>🖥️ Open Projector View</span>
@@ -190,7 +190,7 @@
     <!-- Application Script -->
     <script>
         // Configuration & State
-        const TOTAL_DURATION = 300; // Exactly 5 minutes in seconds
+        const TOTAL_DURATION = 300; // Exactly 5 minutes (300 seconds)
         let currentRole = 'master'; // 'master', 'projector', or 'judge'
         let currentStation = 1;     // 1 to 12
         let timerState = {
@@ -202,7 +202,7 @@
         let judgeStudentNames = {}; // { 1: 'Name', ... }
 
         // Broadcast Channel for Multi-Tab Synchronization
-        const channel = new BroadcastChannel('judge_task_timer_v4');
+        const channel = new BroadcastChannel('judge_task_timer_v5');
 
         // Initialize App
         window.addEventListener('DOMContentLoaded', () => {
@@ -252,7 +252,6 @@
             const subtitle = document.getElementById('current-role-subtitle');
             const header = document.getElementById('app-header');
 
-            // Reset visibility
             masterView.classList.add('hidden');
             projectorView.classList.add('hidden');
             judgeView.classList.add('hidden');
@@ -266,7 +265,7 @@
                 subtitle.textContent = "Master Stage & Projector View";
             } else if (currentRole === 'projector') {
                 projectorView.classList.remove('hidden');
-                header.classList.add('hidden'); // hide nav in pure projector view
+                header.classList.add('hidden');
             } else {
                 judgeView.classList.remove('hidden');
                 navJudge.className = "px-3.5 py-1.5 rounded-lg font-medium bg-indigo-600 text-white shadow";
@@ -283,7 +282,7 @@
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
-                    alert(`Error attempting to enable fullscreen: ${err.message}`);
+                    console.error("Fullscreen error:", err);
                 });
             } else {
                 if (document.exitFullscreen) {
@@ -327,13 +326,19 @@
         function loadStateFromStorage() {
             try {
                 const ts = localStorage.getItem('jt_timerState');
-                if (ts) timerState = JSON.parse(ts);
+                if (ts) {
+                    timerState = JSON.parse(ts);
+                } else {
+                    // Default fresh state
+                    timerState = { status: 'IDLE', startTime: null, pausedElapsed: 0 };
+                }
                 const sr = localStorage.getItem('jt_stationResults');
                 if (sr) stationResults = JSON.parse(sr);
                 const jn = localStorage.getItem('jt_judgeNames');
                 if (jn) judgeStudentNames = JSON.parse(jn);
             } catch (e) {
                 console.error("Error loading local storage", e);
+                timerState = { status: 'IDLE', startTime: null, pausedElapsed: 0 };
             }
         }
 
@@ -349,6 +354,8 @@
                 }
             } else if (timerState.status === 'PAUSED' || timerState.status === 'EXPIRED') {
                 elapsedSec = timerState.pausedElapsed;
+            } else {
+                elapsedSec = 0; // IDLE always starts at 0 elapsed (full 5 minutes)
             }
 
             const remainingSec = Math.max(0, TOTAL_DURATION - elapsedSec);
@@ -428,8 +435,9 @@
             timerState.status = 'RUNNING';
             timerState.startTime = performance.now();
             document.getElementById('master-status-text').textContent = "Competition round in progress...";
-            document.getElementById('btn-master-start').innerHTML = "<span>⏸️ Pause Countdown</span>";
-            document.getElementById('btn-master-start').onclick = masterPause;
+            const btnStart = document.getElementById('btn-master-start');
+            btnStart.innerHTML = "<span>⏸️ Pause Countdown</span>";
+            btnStart.onclick = masterPause;
             broadcastState();
         }
 
@@ -439,15 +447,13 @@
             timerState.status = 'PAUSED';
             timerState.pausedElapsed = elapsed;
             document.getElementById('master-status-text').textContent = "Countdown paused.";
-            document.getElementById('btn-master-start').innerHTML = "<span>🚀 Resume Countdown</span>";
-            document.getElementById('btn-master-start').onclick = masterStart;
+            const btnStart = document.getElementById('btn-master-start');
+            btnStart.innerHTML = "<span>🚀 Resume Countdown</span>";
+            btnStart.onclick = masterStart;
             broadcastState();
         }
 
         function masterReset() {
-            if (Object.keys(stationResults).length > 0) {
-                if (!confirm("Are you sure you want to reset the timer and clear all station results for this round?")) return;
-            }
             timerState = { status: 'IDLE', startTime: null, pausedElapsed: 0 };
             stationResults = {};
             document.getElementById('master-status-text').textContent = "Ready to start 5-minute competition round.";
@@ -668,7 +674,7 @@
                 }
             }
 
-            const blob = new Blob([csv], { type: 'text/css;charset=utf-8;' });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
