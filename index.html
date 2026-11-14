@@ -9,7 +9,7 @@
     <!-- QRCode.js CDN for generating station QR codes -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .timer-font { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
     </style>
@@ -17,7 +17,7 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
 
     <!-- Top Navigation / Role Switcher Bar -->
-    <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-lg">
+    <header id="app-header" class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-lg">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center font-black text-xl shadow-md shadow-indigo-600/30">⏱️</div>
             <div>
@@ -28,20 +28,40 @@
 
         <div class="flex items-center gap-3">
             <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-sm">
-                <button onclick="switchRole('master')" id="nav-master" class="px-4 py-1.5 rounded-lg font-medium transition-all">Master Display</button>
-                <button onclick="switchRole('judge')" id="nav-judge" class="px-4 py-1.5 rounded-lg font-medium transition-all">Judge Station (1–12)</button>
+                <button onclick="switchRole('master')" id="nav-master" class="px-3.5 py-1.5 rounded-lg font-medium transition-all">Master</button>
+                <button onclick="switchRole('projector')" id="nav-projector" class="px-3.5 py-1.5 rounded-lg font-medium transition-all">Projector View</button>
+                <button onclick="switchRole('judge')" id="nav-judge" class="px-3.5 py-1.5 rounded-lg font-medium transition-all">Judges (1–12)</button>
             </div>
         </div>
     </header>
 
     <!-- Main App Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col justify-center">
+
+        <!-- ================= PROJECTOR / STAGE DISPLAY VIEW ================= -->
+        <div id="view-projector" class="hidden flex-1 flex flex-col items-center justify-center text-center space-y-6 py-12">
+            <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-semibold tracking-wide">
+                <span class="w-3 h-3 rounded-full bg-indigo-500 animate-pulse"></span> STAGE COUNTDOWN TIMER
+            </div>
+            
+            <div class="timer-font text-7xl sm:text-9xl lg:text-[11rem] font-extrabold tracking-tight text-white drop-shadow-2xl my-2" id="projector-timer-display">05:00.00</div>
+            
+            <p class="text-xl sm:text-2xl text-slate-400 font-medium" id="projector-status-text">Waiting for Master to start countdown...</p>
+            
+            <div class="pt-8 flex items-center gap-4">
+                <button onclick="switchRole('master')" class="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold rounded-xl border border-slate-800 transition-all text-sm flex items-center gap-2">
+                    <span>⚙️ Return to Master Controls</span>
+                </button>
+                <button onclick="toggleFullscreen()" class="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold rounded-xl border border-slate-800 transition-all text-sm flex items-center gap-2">
+                    <span>🖵 Fullscreen</span>
+                </button>
+            </div>
+        </div>
 
         <!-- ================= MASTER DISPLAY VIEW ================= -->
         <div id="view-master" class="space-y-8">
             <!-- Master Control Header & Progress Bar -->
             <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-                <!-- Depleting Progress Bar Background -->
                 <div id="master-progress" class="absolute top-0 left-0 bottom-0 bg-indigo-600/10 transition-all duration-200 pointer-events-none" style="width: 100%;"></div>
 
                 <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
@@ -61,7 +81,10 @@
                         <button onclick="masterReset()" class="px-6 py-4 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 font-semibold rounded-2xl border border-slate-700 transition-all text-base">
                             🔄 Reset All (05:00)
                         </button>
-                        <button onclick="openJudgeLinksModal()" class="px-5 py-4 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 font-semibold rounded-2xl border border-indigo-500/30 transition-all text-base flex items-center gap-2">
+                        <button onclick="switchRole('projector')" class="px-6 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-2xl transition-all text-base flex items-center gap-2 shadow-lg shadow-indigo-600/30">
+                            <span>🖥️ Open Projector View</span>
+                        </button>
+                        <button onclick="openJudgeLinksModal()" class="px-5 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-2xl border border-slate-700 transition-all text-base flex items-center gap-2">
                             <span>🔗 Judge Links & QR</span>
                         </button>
                     </div>
@@ -167,8 +190,8 @@
     <!-- Application Script -->
     <script>
         // Configuration & State
-        const TOTAL_DURATION = 300; // 5 minutes in seconds
-        let currentRole = 'master'; // 'master' or 'judge'
+        const TOTAL_DURATION = 300; // Exactly 5 minutes in seconds
+        let currentRole = 'master'; // 'master', 'projector', or 'judge'
         let currentStation = 1;     // 1 to 12
         let timerState = {
             status: 'IDLE',         // 'IDLE', 'RUNNING', 'PAUSED', 'EXPIRED'
@@ -178,8 +201,8 @@
         let stationResults = {};    // { 1: { studentName, finishedTimeSec, timestamp }, ... }
         let judgeStudentNames = {}; // { 1: 'Name', ... }
 
-        // Broadcast Channel for Multi-Tab / Multi-Device Synchronization
-        const channel = new BroadcastChannel('judge_task_timer_v3');
+        // Broadcast Channel for Multi-Tab Synchronization
+        const channel = new BroadcastChannel('judge_task_timer_v4');
 
         // Initialize App
         window.addEventListener('DOMContentLoaded', () => {
@@ -194,13 +217,13 @@
             setInterval(updateClockTick, 50);
         });
 
-        // Parse URL Parameters (?role=master|judge&station=1)
+        // Parse URL Parameters (?role=master|projector|judge&station=1)
         function parseURLParams() {
             const params = new URLSearchParams(window.location.search);
             const roleParam = params.get('role');
             const stationParam = params.get('station');
 
-            if (roleParam === 'judge' || roleParam === 'master') {
+            if (roleParam === 'judge' || roleParam === 'master' || roleParam === 'projector') {
                 currentRole = roleParam;
             }
             if (stationParam) {
@@ -221,27 +244,51 @@
 
         function applyRoleView() {
             const masterView = document.getElementById('view-master');
+            const projectorView = document.getElementById('view-projector');
             const judgeView = document.getElementById('view-judge');
             const navMaster = document.getElementById('nav-master');
+            const navProj = document.getElementById('nav-projector');
             const navJudge = document.getElementById('nav-judge');
             const subtitle = document.getElementById('current-role-subtitle');
+            const header = document.getElementById('app-header');
+
+            // Reset visibility
+            masterView.classList.add('hidden');
+            projectorView.classList.add('hidden');
+            judgeView.classList.add('hidden');
+            header.classList.remove('hidden');
 
             if (currentRole === 'master') {
                 masterView.classList.remove('hidden');
-                judgeView.classList.add('hidden');
-                navMaster.className = "px-4 py-1.5 rounded-lg font-medium bg-indigo-600 text-white shadow";
-                navJudge.className = "px-4 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200";
+                navMaster.className = "px-3.5 py-1.5 rounded-lg font-medium bg-indigo-600 text-white shadow";
+                navProj.className = "px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200";
+                navJudge.className = "px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200";
                 subtitle.textContent = "Master Stage & Projector View";
+            } else if (currentRole === 'projector') {
+                projectorView.classList.remove('hidden');
+                header.classList.add('hidden'); // hide nav in pure projector view
             } else {
-                masterView.classList.add('hidden');
                 judgeView.classList.remove('hidden');
-                navJudge.className = "px-4 py-1.5 rounded-lg font-medium bg-indigo-600 text-white shadow";
-                navMaster.className = "px-4 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200";
+                navJudge.className = "px-3.5 py-1.5 rounded-lg font-medium bg-indigo-600 text-white shadow";
+                navMaster.className = "px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200";
+                navProj.className = "px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200";
                 subtitle.textContent = `Judge Terminal — Station ${currentStation}`;
                 
                 document.getElementById('judge-station-title').textContent = `Station ${currentStation}`;
                 document.getElementById('judge-student-name').value = judgeStudentNames[currentStation] || '';
                 updateJudgeUIState();
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
             }
         }
 
@@ -328,6 +375,22 @@
                 }
             }
 
+            // Update Projector View UI
+            const projDisplay = document.getElementById('projector-timer-display');
+            const projStatusText = document.getElementById('projector-status-text');
+            if (projDisplay) projDisplay.textContent = timeStr;
+            if (projStatusText) {
+                if (timerState.status === 'RUNNING') {
+                    projStatusText.textContent = "⏱️ Competition Round in Progress";
+                } else if (timerState.status === 'PAUSED') {
+                    projStatusText.textContent = "⏸️ Timer Paused";
+                } else if (timerState.status === 'EXPIRED') {
+                    projStatusText.textContent = "⚠️ Time Expired (05:00 Reached)";
+                } else {
+                    projStatusText.textContent = "Waiting for Master to start countdown...";
+                }
+            }
+
             // Update Judge View UI
             const judgeDisplay = document.getElementById('judge-timer-display');
             const judgeClockStatus = document.getElementById('judge-clock-status');
@@ -345,7 +408,7 @@
                 }
             }
 
-            // Enable/disable judge stop button based on timer running state
+            // Enable/disable judge stop button
             const btnStop = document.getElementById('btn-judge-stop');
             if (btnStop) {
                 const isFinished = stationResults[currentStation] !== undefined;
@@ -403,9 +466,8 @@
 
         function judgeStopTimer() {
             if (timerState.status !== 'RUNNING') return;
-            if (stationResults[currentStation]) return; // Already stopped
+            if (stationResults[currentStation]) return;
 
-            // Calculate exact elapsed time since master start
             const elapsed = (performance.now() - timerState.startTime) / 1000 + timerState.pausedElapsed;
             const timeTaken = Math.min(TOTAL_DURATION, elapsed);
             const studentName = (document.getElementById('judge-student-name').value || `Student #${currentStation}`).trim();
@@ -447,7 +509,7 @@
             }
         }
 
-        // Render Master Station Grid
+        // Render Master Grid
         function renderMasterGrid() {
             const grid = document.getElementById('stations-grid');
             if (!grid) return;
@@ -571,7 +633,6 @@
             }
         }
 
-        // QR Code Modal popup using QRCode.js
         let qrInstance = null;
         function showQRCode(stationNum, url) {
             document.getElementById('qr-modal-title').textContent = `Station ${stationNum} QR Code`;
@@ -579,7 +640,7 @@
             document.getElementById('modal-qrcode').classList.remove('hidden');
 
             const container = document.getElementById('qrcode-container');
-            container.innerHTML = ''; // clear previous
+            container.innerHTML = '';
             qrInstance = new QRCode(container, {
                 text: url,
                 width: 200,
@@ -594,7 +655,7 @@
             document.getElementById('modal-qrcode').classList.add('hidden');
         }
 
-        // CSV Export Function
+        // CSV Export
         function exportCSV() {
             let csv = 'Station,Student Name,Time Taken (sec),Timestamp\n';
             for (let i = 1; i <= 12; i++) {
@@ -607,7 +668,7 @@
                 }
             }
 
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob([csv], { type: 'text/css;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -617,11 +678,10 @@
             document.body.removeChild(a);
         }
 
-        // Keyboard Shortcuts (Space for Start/Pause, R for Reset)
+        // Keyboard Shortcuts
         function setupKeyboardShortcuts() {
             window.addEventListener('keydown', (e) => {
                 if (currentRole !== 'master') return;
-                // Avoid triggering when typing in inputs
                 if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 
                 if (e.code === 'Space') {
