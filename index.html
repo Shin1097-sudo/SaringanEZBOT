@@ -1,1050 +1,639 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saringan Cabaran EZBOT</title>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-image: url("https://raw.githubusercontent.com/Shin1097-sudo/SaringanEZBOT/refs/heads/ezbot/background.png");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      text-align: center;
-      padding: 130px 30px 30px;
-      margin: 0;
-    }
-
-    h1 {
-      color: #2c3e50;
-    }
-
-    p {
-      color: #555;
-      font-size: 18px;
-    }
-
-    .info {
-      position: fixed;
-      top: 15px;
-      right: 20px;
-      left: auto;
-      transform: none;
-      display: flex;
-      gap: 20px;
-      z-index: 999;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .info-box {
-      background-color: white;
-      padding: 18px 30px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      font-size: 22px;
-      font-weight: bold;
-      color: #2c3e50;
-      border: 3px solid #4f8cff;
-    }
-
-    .score-info-box,
-    .hidden-markah {
-      display: none !important;
-    }
-
-    #time {
-      color: red;
-      font-size: 34px;
-    }
-
-    #score {
-      color: green;
-      font-size: 34px;
-    }
-
-    .student-form {
-      background-color: white;
-      max-width: 750px;
-      margin: 0 auto 30px;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      border: 2px solid #d6e6ff;
-    }
-
-    .student-form h2 {
-      color: #2c3e50;
-    }
-
-    .form-group {
-      text-align: left;
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 6px;
-      color: #34495e;
-    }
-
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid #b7c9e6;
-      border-radius: 8px;
-      font-size: 16px;
-      box-sizing: border-box;
-    }
-
-    .quiz-area {
-      background: white;
-      max-width: 1400px;
-      margin: 20px auto;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-
-    .question-header {
-      background-color: #4f8cff;
-      color: white;
-      padding: 15px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-    }
-
-    .question-header p {
-      color: white;
-    }
-
-    .question-image-box {
-      margin: 20px auto;
-      max-width: 900px;
-      background-color: #f8fbff;
-      border: 2px solid #d6e6ff;
-      border-radius: 15px;
-      padding: 15px;
-    }
-
-    .question-image-box img {
-      max-width: 100%;
-      max-height: 380px;
-      object-fit: contain;
-      border-radius: 12px;
-    }
-
-    /* SUSUNAN UTAMA: Kad arahan melintang di atas, jawapan di bawah */
-    .main-layout {
-      display: flex;
-      flex-direction: column;
-      gap: 25px;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-    }
-
-    .source-section {
-      width: 100%;
-      max-width: 1200px;
-      background-color: #f8fbff;
-      border: 3px dashed #7aa7d9;
-      border-radius: 15px;
-      padding: 15px;
-      min-height: auto;
-      box-sizing: border-box;
-    }
-
-    .answer-section {
-      width: 100%;
-      max-width: 1200px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 15px;
-    }
-
-    .drop-zone {
-      min-height: 115px;
-      background-color: #f8fbff;
-      border: 3px dashed #b7c9e6;
-      border-radius: 12px;
-      padding: 10px;
-      box-sizing: border-box;
-    }
-
-    /* KAD ARAHAN MELINTANG */
-    #sourceBox {
-      min-height: 105px;
-      max-height: none;
-      overflow-x: auto;
-      overflow-y: hidden;
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      justify-content: center;
-      padding: 8px;
-    }
-
-    .drop-zone.drag-over {
-      background-color: #dcecff;
-      border-color: #4f8cff;
-    }
-
-    .zone-title {
-      font-weight: bold;
-      color: #2c3e50;
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-
-    .placeholder {
-      color: #888;
-      font-style: italic;
-      font-size: 13px;
-      margin-top: 20px;
-    }
-
-    .item {
-      background-color: #4f8cff;
-      color: white;
-      padding: 6px;
-      margin: 0;
-      border-radius: 8px;
-      cursor: grab;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex: 0 0 auto;
-    }
-
-    .item img {
-      width: 70px;
-      height: 70px;
-      object-fit: contain;
-      background-color: white;
-      border-radius: 6px;
-      padding: 4px;
-    }
-
-    .item:active {
-      cursor: grabbing;
-    }
-
-    .answer-choice {
-      background-color: #4f8cff;
-    }
-
-    .locked {
-      cursor: not-allowed;
-      opacity: 0.9;
-    }
-
-    button {
-      margin-top: 25px;
-      padding: 12px 25px;
-      background-color: #2ecc71;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-left: 5px;
-      margin-right: 5px;
-    }
-
-    button:hover {
-      background-color: #27ae60;
-    }
-
-    .submit-btn {
-      background-color: #3498db;
-    }
-
-    .submit-btn:hover {
-      background-color: #2980b9;
-    }
-
-    .reset-btn {
-      background-color: #e74c3c;
-    }
-
-    .reset-btn:hover {
-      background-color: #c0392b;
-    }
-
-    button:disabled {
-      background-color: #bdc3c7;
-      cursor: not-allowed;
-    }
-
-    .message {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #2c3e50;
-    }
-
-    .result-box {
-      display: none;
-      background-color: white;
-      max-width: 850px;
-      margin: 25px auto;
-      padding: 20px;
-      border-radius: 15px;
-      border: 3px solid #4f8cff;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      text-align: left;
-    }
-
-    .result-box h2 {
-      text-align: center;
-      color: #2c3e50;
-    }
-
-    .result-box p {
-      font-size: 18px;
-      color: #333;
-    }
-
-    .page-hidden {
-      display: none;
-    }
-
-    .intro-note {
-      max-width: 750px;
-      margin: 0 auto 20px;
-      background: rgba(255,255,255,0.9);
-      padding: 15px;
-      border-radius: 12px;
-      border: 2px solid #d6e6ff;
-      color: #2c3e50;
-      font-weight: bold;
-    }
-
-    .result-page {
-      max-width: 900px;
-      margin: 0 auto;
-      background: rgba(255,255,255,0.95);
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-
-    @media (max-width: 768px) {
-      body {
-        padding: 150px 12px 30px;
-      }
-
-      .answer-section {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      }
-
-      .item img {
-        width: 60px;
-        height: 60px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judge Task Timer - Multi-Device Competition System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- QRCode.js CDN for generating station QR codes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .timer-font { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+    </style>
 </head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
 
-<body>
-
-  <div class="info" id="infoBar" style="display:none;">
-    <div class="info-box">
-      Masa: <span id="time">30:00</span>
-    </div>
-
-    <div class="info-box score-info-box">
-      Markah: <span id="score">--</span>
-    </div>
-  </div>
-
-  <!-- PAGE 1: MAKLUMAT KUMPULAN -->
-  <div id="introPage">
-    <h1>Saringan Cabaran EZBOT</h1>
-    <p class="intro-note">Isi maklumat kumpulan dahulu. Selepas lengkap, tekan butang di bawah untuk masuk ke halaman kuiz.</p>
-
-    <div class="student-form">
-      <h2>Maklumat Kumpulan</h2>
-
-      <div class="form-group">
-        <label for="groupName">Nama Kumpulan</label>
-        <input type="text" id="groupName" placeholder="Contoh: Kumpulan Cemerlang">
-      </div>
-
-      <div class="form-group">
-        <label for="schoolName">Nama Sekolah</label>
-        <input type="text" id="schoolName" placeholder="Contoh: SK Seri Indah">
-      </div>
-
-      <div class="form-group">
-        <label for="stateName">Negeri</label>
-        <select id="stateName">
-          <option value="">-- Pilih Negeri --</option>
-          <option value="Johor">Johor</option>
-          <option value="Kedah">Kedah</option>
-          <option value="Kelantan">Kelantan</option>
-          <option value="Melaka">Melaka</option>
-          <option value="Negeri Sembilan">Negeri Sembilan</option>
-          <option value="Pahang">Pahang</option>
-          <option value="Perak">Perak</option>
-          <option value="Perlis">Perlis</option>
-          <option value="Pulau Pinang">Pulau Pinang</option>
-          <option value="Sabah">Sabah</option>
-          <option value="Sarawak">Sarawak</option>
-          <option value="Selangor">Selangor</option>
-          <option value="Terengganu">Terengganu</option>
-          <option value="Kuala Lumpur">Wilayah Persekutuan Kuala Lumpur</option>
-          <option value="Labuan">Wilayah Persekutuan Labuan</option>
-          <option value="Putrajaya">Wilayah Persekutuan Putrajaya</option>
-        </select>
-      </div>
-
-
-      <button type="button" onclick="openQuizPage()">Teruskan ke Kuiz</button>
-    </div>
-  </div>
-
-  <!-- PAGE 2: KUIZ -->
-  <div id="quizPage" class="page-hidden">
-    <div class="quiz-area">
-      <div class="question-header">
-        <h2 id="questionTitle">Soalan 1</h2>
-        <p id="questionInstruction">Susun item ke bahagian yang betul.</p>
-      </div>
-
-      <div class="question-image-box" id="questionImageBox">
-        <img src="https://raw.githubusercontent.com/Shin1097-sudo/SaringanEZBOT/refs/heads/ezbot/q1_soalan.png" alt="Gambar Soalan 1">
-      </div>
-
-      <div class="main-layout">
-        <div class="source-section">
-          <h2>Kad Arahan</h2>
-          <p style="font-size:14px;">Kad arahan boleh digunakan banyak kali.</p>
-          <div class="drop-zone" id="sourceBox" data-zone="pilihan"></div>
+    <!-- Top Navigation / Role Switcher Bar -->
+    <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-lg">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center font-black text-xl shadow-md shadow-indigo-600/30">⏱️</div>
+            <div>
+                <h1 class="font-bold text-lg tracking-tight">Judge Task Timer</h1>
+                <p class="text-xs text-slate-400" id="current-role-subtitle">Multi-Device Synchronized Competition System</p>
+            </div>
         </div>
 
-        <div class="answer-section" id="answerSection"></div>
-      </div>
+        <div class="flex items-center gap-3">
+            <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-sm">
+                <button onclick="switchRole('master')" id="nav-master" class="px-4 py-1.5 rounded-lg font-medium transition-all">Master Display</button>
+                <button onclick="switchRole('judge')" id="nav-judge" class="px-4 py-1.5 rounded-lg font-medium transition-all">Judge Station (1–12)</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main App Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- ================= MASTER DISPLAY VIEW ================= -->
+        <div id="view-master" class="space-y-8">
+            <!-- Master Control Header & Progress Bar -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+                <!-- Depleting Progress Bar Background -->
+                <div id="master-progress" class="absolute top-0 left-0 bottom-0 bg-indigo-600/10 transition-all duration-200 pointer-events-none" style="width: 100%;"></div>
+
+                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+                    <div class="text-center lg:text-left">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold mb-3">
+                            <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span> ROOM: <span id="room-display">MAIN</span>
+                        </div>
+                        <h2 class="text-xs uppercase tracking-widest text-slate-400 font-bold">Countdown Timer (05:00 Max)</h2>
+                        <div class="timer-font text-5xl sm:text-7xl font-extrabold tracking-tight mt-2 text-white" id="master-timer-display">05:00.00</div>
+                        <p class="text-sm text-slate-400 mt-1" id="master-status-text">Ready to start 5-minute competition round.</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-center gap-3">
+                        <button onclick="masterStart()" id="btn-master-start" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold rounded-2xl shadow-lg shadow-emerald-600/30 transition-all text-base flex items-center gap-2">
+                            <span>🚀 Start 5-Min Countdown</span>
+                        </button>
+                        <button onclick="masterReset()" class="px-6 py-4 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 font-semibold rounded-2xl border border-slate-700 transition-all text-base">
+                            🔄 Reset All (05:00)
+                        </button>
+                        <button onclick="openJudgeLinksModal()" class="px-5 py-4 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 font-semibold rounded-2xl border border-indigo-500/30 transition-all text-base flex items-center gap-2">
+                            <span>🔗 Judge Links & QR</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 12 Stations Live Grid Header & CSV Export -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <h3 class="text-xl font-bold tracking-tight">Live Station Status (Stations 1 – 12)</h3>
+                    <p class="text-sm text-slate-400">Cards turn green instantly when a judge stops their station timer.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="exportCSV()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-sm font-semibold text-slate-300 transition-all flex items-center gap-2">
+                        📥 Export CSV
+                    </button>
+                    <span class="text-xs px-3 py-1 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 font-medium" id="completed-count">0 / 12 Finished</span>
+                </div>
+            </div>
+
+            <!-- 12 Stations Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="stations-grid">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+
+        <!-- ================= JUDGE STATION VIEW ================= -->
+        <div id="view-judge" class="hidden space-y-6 max-w-2xl mx-auto">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+                <!-- Station Selector & Info -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+                    <div>
+                        <span class="text-xs uppercase tracking-widest text-indigo-400 font-bold">Judge Terminal</span>
+                        <h2 class="text-2xl font-bold tracking-tight" id="judge-station-title">Station 1</h2>
+                    </div>
+                    <div class="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0" id="station-selector-pills">
+                        <!-- Pills 1-12 generated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Student Name Input -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-slate-300">Student Name / Team ID</label>
+                    <input type="text" id="judge-student-name" placeholder="Enter student name or team..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-medium transition-colors" oninput="saveCurrentJudgeState()">
+                </div>
+
+                <!-- Shared Countdown Display for Judge -->
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 text-center relative overflow-hidden">
+                    <div class="text-xs uppercase tracking-widest text-slate-500 font-bold">Shared 5-Min Countdown</div>
+                    <div class="timer-font text-5xl sm:text-6xl font-black tracking-tight my-2 text-white" id="judge-timer-display">05:00.00</div>
+                    <div class="text-sm font-semibold text-slate-400" id="judge-clock-status">Waiting for Master to start...</div>
+                </div>
+
+                <!-- Giant Judge Action Button -->
+                <div class="pt-2">
+                    <button id="btn-judge-stop" onclick="judgeStopTimer()" disabled class="w-full py-6 bg-slate-800 text-slate-500 font-extrabold rounded-2xl text-xl shadow-lg transition-all cursor-not-allowed flex flex-col items-center justify-center gap-1">
+                        <span>🛑 STUDENT FINISHED (STOP)</span>
+                        <span class="text-xs font-normal opacity-80">Locks in exact elapsed seconds</span>
+                    </button>
+                    <button id="btn-judge-undo" onclick="judgeUndoStop()" class="hidden w-full mt-3 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-sm transition-all">
+                        ↩️ Undo & Resume Station Timer
+                    </button>
+                </div>
+
+                <!-- Result Confirmation Banner for Judge -->
+                <div id="judge-result-banner" class="hidden p-5 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 space-y-1">
+                    <div class="font-bold text-base flex items-center gap-2"><span>✨</span> Task Completed Recorded!</div>
+                    <div class="text-sm text-emerald-200" id="judge-result-text">Student finished in 0.00s</div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Judge Links & QR Modal -->
+    <div id="modal-judge-links" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+                <div>
+                    <h3 class="text-xl font-bold">Judge Station Links & QR Codes</h3>
+                    <p class="text-xs text-slate-400">Open or scan a direct station URL on each judge's phone/tablet.</p>
+                </div>
+                <button onclick="closeJudgeLinksModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors">✕</button>
+            </div>
+
+            <!-- Scrollable List of Stations -->
+            <div class="flex-1 overflow-y-auto space-y-3 pr-2" id="modal-links-list">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
     </div>
 
-    <div>
-      <button type="button" class="submit-btn" onclick="submitQuestion()">Hantar Soalan</button>
-      <button type="button" class="reset-btn" onclick="resetGame()">Reset</button>
+    <!-- QR Code View Modal -->
+    <div id="modal-qrcode" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4">
+            <h3 class="text-lg font-bold" id="qr-modal-title">Station 1 QR Code</h3>
+            <div class="bg-white p-4 rounded-2xl inline-block mx-auto shadow-inner" id="qrcode-container"></div>
+            <p class="text-xs text-slate-400 break-all px-2" id="qr-modal-url"></p>
+            <button onclick="closeQRModal()" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl transition-all">Close</button>
+        </div>
     </div>
 
-    <div class="message" id="message"></div>
-  </div>
-
-  <!-- PAGE 3: PAPARAN TAMAT SAHAJA -->
-  <div id="resultPage" class="page-hidden result-page">
-    <h1>Tahniah!</h1>
-    <p style="font-size: 28px; font-weight: bold; color: #2c3e50; text-align: center;">
-      Tahniah anda telah tamat menjawab saringan.
-    </p>
-    <p style="font-size: 18px; color: #555; text-align: center;">
-      Jawapan anda telah direkod.
-    </p>
-  </div>
-
-  <script>
-    const totalQuestions = 5;
-    const totalChoices = 17;
-
-    const correctMark = 10;
-    const wrongMark = 0;
-
-    const totalQuizTime = 1800;
-    let timeLeft = totalQuizTime;
-    let timer;
-    let gameStarted = false;
-    let submittedCurrentQuestion = false;
-    let currentQuestionIndex = 0;
-    let totalScore = 0;
-    let allAnswers = [];
-
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2co2HB-4iCQmdhi16R1GLOq6vT8vl2VGEwgsV76Qd98PMuNLTSNX804tjSBlTj3lMiA/exec";
-
-    const GITHUB_IMAGE_BASE = "https://raw.githubusercontent.com/Shin1097-sudo/SaringanEZBOT/refs/heads/ezbot/";
-
-    const timeDisplay = document.getElementById("time");
-    const scoreDisplay = document.getElementById("score");
-    const message = document.getElementById("message");
-
-    const sourceBox = document.getElementById("sourceBox");
-    const answerSection = document.getElementById("answerSection");
-    const questionTitle = document.getElementById("questionTitle");
-    const questionInstruction = document.getElementById("questionInstruction");
-    const questionImageBox = document.getElementById("questionImageBox");
-
-    const groupName = document.getElementById("groupName");
-    const schoolName = document.getElementById("schoolName");
-    const stateName = document.getElementById("stateName");
-
-    const resultBox = document.getElementById("resultBox");
-    const resultGroup = document.getElementById("resultGroup");
-    const resultSchool = document.getElementById("resultSchool");
-    const resultState = document.getElementById("resultState");
-    const resultDateTime = document.getElementById("resultDateTime");
-    const resultTimeTaken = document.getElementById("resultTimeTaken");
-    const resultScore = document.getElementById("resultScore");
-
-    const introPage = document.getElementById("introPage");
-    const quizPage = document.getElementById("quizPage");
-    const resultPage = document.getElementById("resultPage");
-    const infoBar = document.getElementById("infoBar");
-
-    const questions = [];
-
-    function formatTime(seconds) {
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = seconds % 60;
-      return minutes + ":" + (remainingSeconds < 10 ? "0" : "") + remainingSeconds;
-    }
-
-    timeDisplay.textContent = formatTime(timeLeft);
-
-    /*
-      Bahagian ini ialah jawapan sebenar untuk setiap soalan.
-      Kalau satu slot boleh terima lebih daripada satu jawapan, guna array.
-      Contoh: ["pilihan7", "pilihan8"]
-    */
-    const answerKeys = {
-      1: [
-        "pilihan1", "pilihan3", ["pilihan7", "pilihan8"], "pilihan4", "pilihan3",
-        "pilihan8", "pilihan5", "pilihan3", ["pilihan9", "pilihan8"], "pilihan2"
-      ],
-
-      2: [
-        "pilihan1", "pilihan3", ["pilihan7", "pilihan8"], "pilihan5",
-        "pilihan3", "pilihan7", "pilihan4", "pilihan3", ["pilihan9", "pilihan8"],
-        "pilihan12", "pilihan2"
-      ],
-
-      3: [
-        "pilihan1", "pilihan3", ["pilihan7", "pilihan8"], "pilihan4",
-        "pilihan3", "pilihan7", "pilihan5", "pilihan3", ["pilihan7", "pilihan8"],
-        "pilihan17", "pilihan2"
-      ],
-
-      4: [
-        "pilihan1", "pilihan3", ["pilihan7", "pilihan8"], "pilihan4",
-        "pilihan3", "pilihan8", "pilihan5", "pilihan3", ["pilihan7", "pilihan8"],
-        "pilihan13", "pilihan2"
-      ],
-
-      5: [
-        "pilihan1", "pilihan3", "pilihan7", "pilihan4", "pilihan3",
-        "pilihan7", "pilihan14", "pilihan6", "pilihan3", "pilihan8", "pilihan4",
-        "pilihan3", "pilihan10", "pilihan16", "pilihan2"
-      ]
-    };
-
-    const commonChoices = [];
-
-    for (let i = 1; i <= totalChoices; i++) {
-      commonChoices.push({
-        value: `pilihan${i}`,
-        text: `Pilihan ${i}`,
-        image: `pilihan${i}.png`
-      });
-    }
-
-    for (let q = 1; q <= totalQuestions; q++) {
-      const zones = [];
-
-      for (let i = 0; i < answerKeys[q].length; i++) {
-        zones.push({
-          id: `slot${i + 1}`,
-          label: `Kad Arahan ${i + 1}`,
-          answer: Array.isArray(answerKeys[q][i])
-            ? answerKeys[q][i].join(",")
-            : answerKeys[q][i]
-        });
-      }
-
-      questions.push({
-        title: `Soalan ${q}`,
-        instruction: `Lihat gambar soalan. Soalan ini mempunyai ${answerKeys[q].length} tempat jawapan.`,
-        image: `q${q}_soalan.png`,
-        choices: commonChoices,
-        zones: zones
-      });
-    }
-
-    sourceBox.addEventListener("dragover", dragOver);
-    sourceBox.addEventListener("dragleave", dragLeave);
-    sourceBox.addEventListener("drop", dropItem);
-
-    function openQuizPage() {
-      if (!validateStudentInfo()) {
-        return;
-      }
-
-      introPage.style.display = "none";
-      quizPage.style.display = "block";
-      resultPage.style.display = "none";
-      infoBar.style.display = "flex";
-
-      window.scrollTo(0, 0);
-      startGame();
-    }
-
-    function validateStudentInfo() {
-      if (groupName.value.trim() === "") {
-        alert("Sila isi Nama Kumpulan.");
-        groupName.focus();
-        return false;
-      }
-
-      if (schoolName.value.trim() === "") {
-        alert("Sila isi Nama Sekolah.");
-        schoolName.focus();
-        return false;
-      }
-
-      if (stateName.value === "") {
-        alert("Sila pilih Negeri.");
-        stateName.focus();
-        return false;
-      }
-
-
-      return true;
-    }
-
-    function startGame() {
-      if (gameStarted) return;
-
-      groupName.disabled = true;
-      schoolName.disabled = true;
-      stateName.disabled = true;
-
-      gameStarted = true;
-      message.textContent = "Kuiz bermula. Selesaikan soalan semasa dahulu.";
-
-      loadQuestion(currentQuestionIndex);
-
-      timer = setInterval(function() {
-        timeLeft--;
-        timeDisplay.textContent = formatTime(timeLeft);
-
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          finishQuiz();
-        }
-      }, 1000);
-    }
-
-    function loadQuestion(index) {
-      submittedCurrentQuestion = false;
-
-      const question = questions[index];
-
-      questionTitle.textContent = question.title;
-      questionInstruction.textContent = question.instruction;
-
-      questionImageBox.innerHTML = `
-        <img src="${GITHUB_IMAGE_BASE}${question.image}" alt="${question.title}" onerror="this.style.display='none'">
-      `;
-
-      sourceBox.innerHTML = "";
-      answerSection.innerHTML = "";
-
-      question.choices.forEach(choice => {
-        const choiceDiv = document.createElement("div");
-        choiceDiv.className = "item choice-template";
-        choiceDiv.draggable = true;
-        choiceDiv.setAttribute("data-value", choice.value);
-        choiceDiv.setAttribute("data-type", "template");
-
-        choiceDiv.innerHTML = `
-          <img src="${GITHUB_IMAGE_BASE}${choice.image}" alt="${choice.text}" onerror="this.style.display='none'">
-        `;
-
-        choiceDiv.addEventListener("dragstart", dragStart);
-        sourceBox.appendChild(choiceDiv);
-      });
-
-      question.zones.forEach(zone => {
-        const zoneDiv = document.createElement("div");
-        zoneDiv.className = "drop-zone answer-zone";
-        zoneDiv.setAttribute("data-zone", zone.id);
-        zoneDiv.setAttribute("data-answer", zone.answer);
-
-        zoneDiv.innerHTML = `
-          <div class="zone-title">${zone.label}</div>
-          <div class="placeholder">Letak kad arahan di sini</div>
-        `;
-
-        zoneDiv.addEventListener("dragover", dragOver);
-        zoneDiv.addEventListener("dragleave", dragLeave);
-        zoneDiv.addEventListener("drop", dropItem);
-
-        answerSection.appendChild(zoneDiv);
-      });
-    }
-
-    function dragStart(event) {
-      if (!gameStarted) {
-        alert("Sila tekan butang Teruskan ke Kuiz dahulu.");
-        event.preventDefault();
-        return;
-      }
-
-      if (submittedCurrentQuestion) {
-        alert("Soalan ini sudah dihantar.");
-        event.preventDefault();
-        return;
-      }
-
-      if (timeLeft <= 0) {
-        event.preventDefault();
-        return;
-      }
-
-      const item = event.target.closest(".item");
-
-      event.dataTransfer.setData("value", item.getAttribute("data-value"));
-      event.dataTransfer.setData("type", item.getAttribute("data-type") || "answer");
-      event.dataTransfer.setData("id", item.id || "");
-    }
-
-    function dragOver(event) {
-      event.preventDefault();
-
-      if (gameStarted && !submittedCurrentQuestion && timeLeft > 0) {
-        event.currentTarget.classList.add("drag-over");
-      }
-    }
-
-    function dragLeave(event) {
-      event.currentTarget.classList.remove("drag-over");
-    }
-
-    function dropItem(event) {
-      event.preventDefault();
-
-      if (!gameStarted || submittedCurrentQuestion || timeLeft <= 0) {
-        return;
-      }
-
-      const targetZone = event.currentTarget;
-      targetZone.classList.remove("drag-over");
-
-      const value = event.dataTransfer.getData("value");
-      const type = event.dataTransfer.getData("type");
-      const id = event.dataTransfer.getData("id");
-
-      if (!value) return;
-
-      if (targetZone.id === "sourceBox") {
-        if (type === "answer") {
-          const existingAnswer = document.getElementById(id);
-          if (existingAnswer) {
-            existingAnswer.remove();
-            restoreEmptyPlaceholders();
-            message.textContent = "Item telah dikeluarkan daripada jawapan.";
-          }
-        }
-        return;
-      }
-
-      if (targetZone.classList.contains("answer-zone")) {
-        const existingItem = targetZone.querySelector(".answer-choice");
-
-        if (existingItem) {
-          existingItem.remove();
-        }
-
-        if (type === "template") {
-          const template = document.querySelector(`.choice-template[data-value="${value}"]`);
-          const newItem = createAnswerItem(template, value);
-          removePlaceholder(targetZone);
-          targetZone.appendChild(newItem);
-        } else {
-          const draggedAnswer = document.getElementById(id);
-
-          if (draggedAnswer) {
-            removePlaceholder(targetZone);
-            targetZone.appendChild(draggedAnswer);
-          }
-        }
-
-        restoreEmptyPlaceholders();
-        message.textContent = "Anda boleh ubah jawapan sebelum tekan Hantar Soalan.";
-      }
-    }
-
-    function createAnswerItem(template, value) {
-      const newItem = document.createElement("div");
-
-      newItem.className = "item answer-choice";
-      newItem.id = "answer_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
-      newItem.draggable = true;
-      newItem.setAttribute("data-value", value);
-      newItem.setAttribute("data-type", "answer");
-
-      newItem.innerHTML = template.innerHTML;
-      newItem.addEventListener("dragstart", dragStart);
-
-      return newItem;
-    }
-
-    function submitQuestion() {
-      if (!gameStarted) {
-        alert("Sila tekan butang Teruskan ke Kuiz dahulu.");
-        return;
-      }
-
-      if (submittedCurrentQuestion) {
-        return;
-      }
-
-      if (!isQuestionComplete()) {
-        alert("Sila lengkapkan semua tempat jawapan untuk soalan ini dahulu.");
-        return;
-      }
-
-      const answerZones = document.querySelectorAll(".answer-zone");
-      let questionScore = 0;
-
-      let questionRecord = {
-        soalan: currentQuestionIndex + 1,
-        markahSoalan: 0,
-        jawapan: []
-      };
-
-      answerZones.forEach((zone, index) => {
-        const answerItem = zone.querySelector(".answer-choice");
-        const selectedValue = answerItem.getAttribute("data-value");
-        const correctValues = zone.getAttribute("data-answer").split(",");
-
-        let statusJawapan = "Salah";
-
-        if (correctValues.includes(selectedValue)) {
-          questionScore += correctMark;
-          statusJawapan = "Betul";
-        } else {
-          questionScore += wrongMark;
-        }
-
-        questionRecord.jawapan.push({
-          bahagian: index + 1,
-          jawapanPelajar: selectedValue,
-          jawapanDiterima: correctValues,
-          status: statusJawapan
+    <!-- Application Script -->
+    <script>
+        // Configuration & State
+        const TOTAL_DURATION = 300; // 5 minutes in seconds
+        let currentRole = 'master'; // 'master' or 'judge'
+        let currentStation = 1;     // 1 to 12
+        let timerState = {
+            status: 'IDLE',         // 'IDLE', 'RUNNING', 'PAUSED', 'EXPIRED'
+            startTime: null,
+            pausedElapsed: 0
+        };
+        let stationResults = {};    // { 1: { studentName, finishedTimeSec, timestamp }, ... }
+        let judgeStudentNames = {}; // { 1: 'Name', ... }
+
+        // Broadcast Channel for Multi-Tab / Multi-Device Synchronization
+        const channel = new BroadcastChannel('judge_task_timer_v3');
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStateFromStorage();
+            parseURLParams();
+            renderMasterGrid();
+            renderJudgePills();
+            renderJudgeLinksModalList();
+            setupKeyboardShortcuts();
+            
+            // Sync interval
+            setInterval(updateClockTick, 50);
         });
 
-        answerItem.draggable = false;
-        answerItem.classList.add("locked");
-      });
+        // Parse URL Parameters (?role=master|judge&station=1)
+        function parseURLParams() {
+            const params = new URLSearchParams(window.location.search);
+            const roleParam = params.get('role');
+            const stationParam = params.get('station');
 
-      questionRecord.markahSoalan = questionScore;
-      allAnswers.push(questionRecord);
-
-      const sourceItems = document.querySelectorAll(".choice-template");
-      sourceItems.forEach(item => {
-        item.draggable = false;
-        item.classList.add("locked");
-      });
-
-      totalScore += questionScore;
-      submittedCurrentQuestion = true;
-
-      if (currentQuestionIndex === questions.length - 1) {
-        message.textContent = "Semua soalan telah dihantar.";
-        finishQuiz();
-      } else {
-        currentQuestionIndex++;
-        loadQuestion(currentQuestionIndex);
-        message.textContent = "Jawapan telah dihantar. Teruskan dengan soalan seterusnya.";
-      }
-    }
-
-    function isQuestionComplete() {
-      const answerZones = document.querySelectorAll(".answer-zone");
-
-      for (let zone of answerZones) {
-        const hasItem = zone.querySelector(".answer-choice");
-
-        if (!hasItem) {
-          return false;
-        }
-      }
-
-      return true;
-    }
-
-    function getTimeTaken() {
-      const usedSeconds = totalQuizTime - timeLeft;
-      return formatTime(usedSeconds);
-    }
-
-    function saveResultToGoogleSheet(dateTimeAnswered) {
-      const masaDiambil = getTimeTaken();
-
-      const payload = {
-        tarikh: dateTimeAnswered,
-        masaDiambil: masaDiambil,
-        groupName: groupName.value.trim(),
-        schoolName: schoolName.value.trim(),
-        stateName: stateName.value,
-        score: String(totalScore),
-        answers: JSON.stringify(allAnswers),
-
-        // Nama medan tambahan supaya serasi jika Google Apps Script cikgu guna nama BM.
-        namaKumpulan: groupName.value.trim(),
-        namaSekolah: schoolName.value.trim(),
-        negeri: stateName.value,
-        markah: String(totalScore),
-        jawapan: JSON.stringify(allAnswers)
-      };
-
-      // Simpan salinan dalam browser sebagai backup jika internet/Web App bermasalah.
-      try {
-        localStorage.setItem("EZBOT_LAST_SUBMISSION", JSON.stringify(payload));
-      } catch (error) {
-        console.warn("Backup localStorage gagal:", error);
-      }
-
-      // Kaedah hidden form lebih sesuai untuk Google Apps Script kerana tidak bergantung pada CORS.
-      const iframeName = "google_sheet_iframe_" + Date.now();
-
-      const iframe = document.createElement("iframe");
-      iframe.name = iframeName;
-      iframe.style.display = "none";
-      document.body.appendChild(iframe);
-
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = GOOGLE_SCRIPT_URL;
-      form.target = iframeName;
-      form.style.display = "none";
-
-      Object.keys(payload).forEach(key => {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = payload[key];
-        form.appendChild(input);
-      });
-
-      document.body.appendChild(form);
-      form.submit();
-
-      setTimeout(() => {
-        form.remove();
-        iframe.remove();
-      }, 5000);
-    }
-
-    function finishQuiz() {
-      gameStarted = false;
-      clearInterval(timer);
-
-      const allItems = document.querySelectorAll(".item");
-
-      allItems.forEach(item => {
-        item.draggable = false;
-        item.classList.add("locked");
-      });
-
-      const now = new Date();
-
-      const dateTimeAnswered = now.toLocaleString("ms-MY", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true
-      });
-
-      scoreDisplay.textContent = totalScore;
-
-      // Hantar data ke Google Sheet dahulu.
-      // Jangan panggil resultGroup/resultSchool/resultBox kerana elemen itu sudah tiada dalam HTML.
-      saveResultToGoogleSheet(dateTimeAnswered);
-
-      // Paparkan halaman tamat sahaja kepada pelajar.
-      quizPage.style.display = "none";
-      infoBar.style.display = "none";
-      resultPage.style.display = "block";
-      window.scrollTo(0, 0);
-    }
-
-    function resetGame() {
-      clearInterval(timer);
-
-      timeLeft = totalQuizTime;
-      gameStarted = false;
-      submittedCurrentQuestion = false;
-      currentQuestionIndex = 0;
-      totalScore = 0;
-      allAnswers = [];
-
-      timeDisplay.textContent = formatTime(timeLeft);
-      scoreDisplay.textContent = "--";
-      message.textContent = "";
-
-      groupName.disabled = false;
-      schoolName.disabled = false;
-      stateName.disabled = false;
-
-      groupName.value = "";
-      schoolName.value = "";
-      stateName.value = "";
-
-      introPage.style.display = "block";
-      quizPage.style.display = "none";
-      resultPage.style.display = "none";
-      infoBar.style.display = "none";
-      window.scrollTo(0, 0);
-
-      loadQuestion(currentQuestionIndex);
-    }
-
-    function removePlaceholder(zone) {
-      const placeholder = zone.querySelector(".placeholder");
-
-      if (placeholder) {
-        placeholder.remove();
-      }
-    }
-
-    function restoreEmptyPlaceholders() {
-      const answerZones = document.querySelectorAll(".answer-zone");
-
-      answerZones.forEach(zone => {
-        const hasItem = zone.querySelector(".answer-choice");
-        const hasPlaceholder = zone.querySelector(".placeholder");
-
-        if (!hasItem && !hasPlaceholder) {
-          const placeholder = document.createElement("div");
-          placeholder.className = "placeholder";
-          placeholder.textContent = "Letak kad arahan di sini";
-          zone.appendChild(placeholder);
+            if (roleParam === 'judge' || roleParam === 'master') {
+                currentRole = roleParam;
+            }
+            if (stationParam) {
+                const s = parseInt(stationParam);
+                if (s >= 1 && s <= 12) currentStation = s;
+            }
+            applyRoleView();
         }
 
-        zone.classList.remove("drag-over");
-      });
+        function switchRole(role, stationNum = null) {
+            currentRole = role;
+            if (stationNum) currentStation = stationNum;
+            
+            const newUrl = `${window.location.pathname}?role=${currentRole}${currentRole === 'judge' ? '&station=' + currentStation : ''}`;
+            window.history.pushState({}, '', newUrl);
+            applyRoleView();
+        }
 
-      sourceBox.classList.remove("drag-over");
-    }
+        function applyRoleView() {
+            const masterView = document.getElementById('view-master');
+            const judgeView = document.getElementById('view-judge');
+            const navMaster = document.getElementById('nav-master');
+            const navJudge = document.getElementById('nav-judge');
+            const subtitle = document.getElementById('current-role-subtitle');
 
-    loadQuestion(currentQuestionIndex);
-  </script>
+            if (currentRole === 'master') {
+                masterView.classList.remove('hidden');
+                judgeView.classList.add('hidden');
+                navMaster.className = "px-4 py-1.5 rounded-lg font-medium bg-indigo-600 text-white shadow";
+                navJudge.className = "px-4 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200";
+                subtitle.textContent = "Master Stage & Projector View";
+            } else {
+                masterView.classList.add('hidden');
+                judgeView.classList.remove('hidden');
+                navJudge.className = "px-4 py-1.5 rounded-lg font-medium bg-indigo-600 text-white shadow";
+                navMaster.className = "px-4 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200";
+                subtitle.textContent = `Judge Terminal — Station ${currentStation}`;
+                
+                document.getElementById('judge-station-title').textContent = `Station ${currentStation}`;
+                document.getElementById('judge-student-name').value = judgeStudentNames[currentStation] || '';
+                updateJudgeUIState();
+            }
+        }
 
+        // Broadcast Communication
+        channel.onmessage = (event) => {
+            const data = event.data;
+            if (data.type === 'SYNC_STATE') {
+                timerState = data.timerState;
+                stationResults = data.stationResults || {};
+                judgeStudentNames = data.judgeStudentNames || {};
+                saveStateToStorageLocally();
+                renderMasterGrid();
+                if (currentRole === 'judge') {
+                    updateJudgeUIState();
+                }
+            }
+        };
+
+        function broadcastState() {
+            saveStateToStorageLocally();
+            channel.postMessage({
+                type: 'SYNC_STATE',
+                timerState,
+                stationResults,
+                judgeStudentNames
+            });
+            renderMasterGrid();
+        }
+
+        function saveStateToStorageLocally() {
+            localStorage.setItem('jt_timerState', JSON.stringify(timerState));
+            localStorage.setItem('jt_stationResults', JSON.stringify(stationResults));
+            localStorage.setItem('jt_judgeNames', JSON.stringify(judgeStudentNames));
+        }
+
+        function loadStateFromStorage() {
+            try {
+                const ts = localStorage.getItem('jt_timerState');
+                if (ts) timerState = JSON.parse(ts);
+                const sr = localStorage.getItem('jt_stationResults');
+                if (sr) stationResults = JSON.parse(sr);
+                const jn = localStorage.getItem('jt_judgeNames');
+                if (jn) judgeStudentNames = JSON.parse(jn);
+            } catch (e) {
+                console.error("Error loading local storage", e);
+            }
+        }
+
+        // Timer Logic & Tick Loop
+        function updateClockTick() {
+            let elapsedSec = 0;
+            if (timerState.status === 'RUNNING') {
+                elapsedSec = (performance.now() - timerState.startTime) / 1000 + timerState.pausedElapsed;
+                if (elapsedSec >= TOTAL_DURATION) {
+                    elapsedSec = TOTAL_DURATION;
+                    timerState.status = 'EXPIRED';
+                    broadcastState();
+                }
+            } else if (timerState.status === 'PAUSED' || timerState.status === 'EXPIRED') {
+                elapsedSec = timerState.pausedElapsed;
+            }
+
+            const remainingSec = Math.max(0, TOTAL_DURATION - elapsedSec);
+            const progressPercent = (remainingSec / TOTAL_DURATION) * 100;
+
+            // Format mm:ss.ms
+            const mins = Math.floor(remainingSec / 60);
+            const secs = Math.floor(remainingSec % 60);
+            const ms = Math.floor((remainingSec % 1) * 100);
+            const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
+
+            // Update Master Display UI
+            const masterDisplay = document.getElementById('master-timer-display');
+            const masterProgBar = document.getElementById('master-progress');
+            if (masterDisplay) masterDisplay.textContent = timeStr;
+            if (masterProgBar) {
+                masterProgBar.style.width = `${progressPercent}%`;
+                if (remainingSec <= 30) {
+                    masterProgBar.className = "absolute top-0 left-0 bottom-0 bg-rose-600/20 transition-all duration-200 pointer-events-none";
+                } else if (remainingSec <= 60) {
+                    masterProgBar.className = "absolute top-0 left-0 bottom-0 bg-amber-600/20 transition-all duration-200 pointer-events-none";
+                } else {
+                    masterProgBar.className = "absolute top-0 left-0 bottom-0 bg-indigo-600/10 transition-all duration-200 pointer-events-none";
+                }
+            }
+
+            // Update Judge View UI
+            const judgeDisplay = document.getElementById('judge-timer-display');
+            const judgeClockStatus = document.getElementById('judge-clock-status');
+            if (judgeDisplay) judgeDisplay.textContent = timeStr;
+            if (judgeClockStatus) {
+                if (timerState.status === 'RUNNING') {
+                    judgeClockStatus.textContent = "⏱️ Countdown active across all stations";
+                    judgeClockStatus.className = "text-sm font-semibold text-emerald-400";
+                } else if (timerState.status === 'EXPIRED') {
+                    judgeClockStatus.textContent = "⚠️ Time expired (05:00 reached)";
+                    judgeClockStatus.className = "text-sm font-semibold text-rose-400";
+                } else {
+                    judgeClockStatus.textContent = "Waiting for Master to start...";
+                    judgeClockStatus.className = "text-sm font-semibold text-slate-400";
+                }
+            }
+
+            // Enable/disable judge stop button based on timer running state
+            const btnStop = document.getElementById('btn-judge-stop');
+            if (btnStop) {
+                const isFinished = stationResults[currentStation] !== undefined;
+                if (timerState.status === 'RUNNING' && !isFinished) {
+                    btnStop.disabled = false;
+                    btnStop.className = "w-full py-6 bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-extrabold rounded-2xl text-xl shadow-lg shadow-rose-600/30 transition-all cursor-pointer flex flex-col items-center justify-center gap-1";
+                } else {
+                    btnStop.disabled = true;
+                    btnStop.className = "w-full py-6 bg-slate-800 text-slate-500 font-extrabold rounded-2xl text-xl shadow-lg transition-all cursor-not-allowed flex flex-col items-center justify-center gap-1";
+                }
+            }
+        }
+
+        // Master Controls
+        function masterStart() {
+            if (timerState.status === 'RUNNING') return;
+            timerState.status = 'RUNNING';
+            timerState.startTime = performance.now();
+            document.getElementById('master-status-text').textContent = "Competition round in progress...";
+            document.getElementById('btn-master-start').innerHTML = "<span>⏸️ Pause Countdown</span>";
+            document.getElementById('btn-master-start').onclick = masterPause;
+            broadcastState();
+        }
+
+        function masterPause() {
+            if (timerState.status !== 'RUNNING') return;
+            const elapsed = (performance.now() - timerState.startTime) / 1000 + timerState.pausedElapsed;
+            timerState.status = 'PAUSED';
+            timerState.pausedElapsed = elapsed;
+            document.getElementById('master-status-text').textContent = "Countdown paused.";
+            document.getElementById('btn-master-start').innerHTML = "<span>🚀 Resume Countdown</span>";
+            document.getElementById('btn-master-start').onclick = masterStart;
+            broadcastState();
+        }
+
+        function masterReset() {
+            if (Object.keys(stationResults).length > 0) {
+                if (!confirm("Are you sure you want to reset the timer and clear all station results for this round?")) return;
+            }
+            timerState = { status: 'IDLE', startTime: null, pausedElapsed: 0 };
+            stationResults = {};
+            document.getElementById('master-status-text').textContent = "Ready to start 5-minute competition round.";
+            const btnStart = document.getElementById('btn-master-start');
+            btnStart.innerHTML = "<span>🚀 Start 5-Min Countdown</span>";
+            btnStart.onclick = masterStart;
+            broadcastState();
+        }
+
+        // Judge Station Controls
+        function saveCurrentJudgeState() {
+            const nameInput = document.getElementById('judge-student-name').value;
+            judgeStudentNames[currentStation] = nameInput;
+            broadcastState();
+        }
+
+        function judgeStopTimer() {
+            if (timerState.status !== 'RUNNING') return;
+            if (stationResults[currentStation]) return; // Already stopped
+
+            // Calculate exact elapsed time since master start
+            const elapsed = (performance.now() - timerState.startTime) / 1000 + timerState.pausedElapsed;
+            const timeTaken = Math.min(TOTAL_DURATION, elapsed);
+            const studentName = (document.getElementById('judge-student-name').value || `Student #${currentStation}`).trim();
+
+            stationResults[currentStation] = {
+                station: currentStation,
+                studentName: studentName,
+                timeTakenSec: Number(timeTaken.toFixed(2)),
+                timestamp: new Date().toLocaleTimeString()
+            };
+
+            broadcastState();
+            updateJudgeUIState();
+        }
+
+        function judgeUndoStop() {
+            if (!stationResults[currentStation]) return;
+            delete stationResults[currentStation];
+            broadcastState();
+            updateJudgeUIState();
+        }
+
+        function updateJudgeUIState() {
+            const isFinished = stationResults[currentStation] !== undefined;
+            const banner = document.getElementById('judge-result-banner');
+            const bannerText = document.getElementById('judge-result-text');
+            const undoBtn = document.getElementById('btn-judge-undo');
+
+            if (isFinished) {
+                const res = stationResults[currentStation];
+                banner.classList.remove('hidden');
+                undoBtn.classList.remove('hidden');
+                const mins = Math.floor(res.timeTakenSec / 60);
+                const secs = (res.timeTakenSec % 60).toFixed(2);
+                bannerText.textContent = `${res.studentName} finished in ${res.timeTakenSec} seconds (${mins > 0 ? mins + 'm ' : ''}${secs}s)`;
+            } else {
+                banner.classList.add('hidden');
+                undoBtn.classList.add('hidden');
+            }
+        }
+
+        // Render Master Station Grid
+        function renderMasterGrid() {
+            const grid = document.getElementById('stations-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            let finishedCount = 0;
+
+            for (let i = 1; i <= 12; i++) {
+                const res = stationResults[i];
+                const studentName = judgeStudentNames[i] || '';
+                const isFinished = res !== undefined;
+
+                if (isFinished) finishedCount++;
+
+                const card = document.createElement('div');
+                card.className = `rounded-2xl border p-5 transition-all flex flex-col justify-between gap-4 ${
+                    isFinished 
+                        ? 'bg-emerald-950/20 border-emerald-500/40 shadow-lg shadow-emerald-950/30' 
+                        : 'bg-slate-900 border-slate-800'
+                }`;
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-black uppercase tracking-wider px-2.5 py-1 rounded-lg ${isFinished ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'}">
+                            Station ${i}
+                        </span>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${isFinished ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-500'}">
+                            ${isFinished ? '✅ Finished' : '⌛ Waiting'}
+                        </span>
+                    </div>
+
+                    <div class="space-y-1">
+                        <div class="text-xs text-slate-500 font-medium">Student / Team</div>
+                        <div class="font-bold text-base text-slate-200 truncate">${studentName || '<span class="text-slate-600 italic">No name entered</span>'}</div>
+                    </div>
+
+                    <div class="bg-slate-950/60 rounded-xl p-3 border border-slate-800/80 flex items-center justify-between">
+                        <span class="text-xs text-slate-400">Time Taken:</span>
+                        <span class="timer-font text-lg font-black ${isFinished ? 'text-emerald-400' : 'text-slate-500'}">
+                            ${isFinished ? res.timeTakenSec.toFixed(2) + 's' : '--.-- s'}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-2 pt-1">
+                        <button onclick="switchRole('judge', ${i})" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition-all">
+                            Open Terminal
+                        </button>
+                        ${isFinished ? `<button onclick="clearStationResult(${i})" class="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold rounded-xl transition-all" title="Reset Station">↺</button>` : ''}
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+
+            document.getElementById('completed-count').textContent = `${finishedCount} / 12 Finished`;
+        }
+
+        function clearStationResult(stationNum) {
+            delete stationResults[stationNum];
+            broadcastState();
+        }
+
+        // Render Judge Selector Pills
+        function renderJudgePills() {
+            const container = document.getElementById('station-selector-pills');
+            if (!container) return;
+            container.innerHTML = '';
+
+            for (let i = 1; i <= 12; i++) {
+                const isCurrent = i === currentStation;
+                const isFinished = stationResults[i] !== undefined;
+                const btn = document.createElement('button');
+                btn.onclick = () => switchRole('judge', i);
+                btn.className = `w-9 h-9 rounded-xl font-bold text-xs flex items-center justify-center transition-all ${
+                    isCurrent 
+                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' 
+                        : isFinished 
+                            ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-500/30' 
+                            : 'bg-slate-950 text-slate-400 border border-slate-800 hover:bg-slate-800'
+                }`;
+                btn.textContent = i;
+                container.appendChild(btn);
+            }
+        }
+
+        // Judge Links & QR Modal
+        function openJudgeLinksModal() {
+            document.getElementById('modal-judge-links').classList.remove('hidden');
+            renderJudgeLinksModalList();
+        }
+
+        function closeJudgeLinksModal() {
+            document.getElementById('modal-judge-links').classList.add('hidden');
+        }
+
+        function renderJudgeLinksModalList() {
+            const list = document.getElementById('modal-links-list');
+            if (!list) return;
+            list.innerHTML = '';
+
+            const baseUrl = window.location.origin + window.location.pathname;
+
+            for (let i = 1; i <= 12; i++) {
+                const stationUrl = `${baseUrl}?role=judge&station=${i}`;
+                const row = document.createElement('div');
+                row.className = "flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-950 p-4 rounded-2xl border border-slate-800";
+                row.innerHTML = `
+                    <div>
+                        <div class="font-bold text-sm text-slate-200">Station ${i} Terminal</div>
+                        <a href="${stationUrl}" target="_blank" class="text-xs text-indigo-400 hover:underline break-all">${stationUrl}</a>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="showQRCode(${i}, '${stationUrl}')" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition-all flex items-center gap-1.5">
+                            <span>📱 Show QR</span>
+                        </button>
+                        <button onclick="navigator.clipboard.writeText('${stationUrl}'); alert('Copied link for Station ${i}!')" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition-all">
+                            📋 Copy Link
+                        </button>
+                    </div>
+                `;
+                list.appendChild(row);
+            }
+        }
+
+        // QR Code Modal popup using QRCode.js
+        let qrInstance = null;
+        function showQRCode(stationNum, url) {
+            document.getElementById('qr-modal-title').textContent = `Station ${stationNum} QR Code`;
+            document.getElementById('qr-modal-url').textContent = url;
+            document.getElementById('modal-qrcode').classList.remove('hidden');
+
+            const container = document.getElementById('qrcode-container');
+            container.innerHTML = ''; // clear previous
+            qrInstance = new QRCode(container, {
+                text: url,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+
+        function closeQRModal() {
+            document.getElementById('modal-qrcode').classList.add('hidden');
+        }
+
+        // CSV Export Function
+        function exportCSV() {
+            let csv = 'Station,Student Name,Time Taken (sec),Timestamp\n';
+            for (let i = 1; i <= 12; i++) {
+                const res = stationResults[i];
+                const name = judgeStudentNames[i] || `Station ${i}`;
+                if (res) {
+                    csv += `${i},"${res.studentName}",${res.timeTakenSec},"${res.timestamp}"\n`;
+                } else {
+                    csv += `${i},"${name}",N/A,N/A\n`;
+                }
+            }
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `judge_timer_results_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Keyboard Shortcuts (Space for Start/Pause, R for Reset)
+        function setupKeyboardShortcuts() {
+            window.addEventListener('keydown', (e) => {
+                if (currentRole !== 'master') return;
+                // Avoid triggering when typing in inputs
+                if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    if (timerState.status === 'RUNNING') masterPause();
+                    else masterStart();
+                } else if (e.code === 'KeyR') {
+                    e.preventDefault();
+                    masterReset();
+                }
+            });
+        }
+    </script>
 </body>
 </html>
